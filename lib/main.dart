@@ -1,28 +1,28 @@
+import 'package:mobel1/core/constants/app_constants.dart';
+import 'package:mobel1/core/theme/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'core/constants/app_constants.dart';
-import 'core/theme/app_theme.dart';
-import 'features/dashboard/presentation/pages/dashboard_page.dart';
+
+import 'package:mobel1/features/dashboard/presentation/pages/dashboard_page.dart';
 
 void main() {
-  runApp(
-    // ProviderScope adalah root untuk semua provider Riverpod
-    const ProviderScope(child: MyApp()),
-  );
+  // runApp(const MyApp());
+  runApp(ProviderScope(child: MyApp()));
 }
 
-class MyApp extends ConsumerWidget {
-  const MyApp({super.key});
+class MyApp extends StatelessWidget {
+  MyApp({super.key});
 
+  // This widget is the root of your application.
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return MaterialApp(
       title: AppConstants.appName,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeMode.light,
-      home: const DashboardPage(),
+      home: DashboardPage(),
     ); // MaterialApp
   }
 }
