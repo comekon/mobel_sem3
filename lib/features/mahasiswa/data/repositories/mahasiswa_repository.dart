@@ -1,48 +1,42 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import 'package:mobel1/features/mahasiswa/data/models/mahasiswa_model.dart';
 
 class MahasiswaRepository {
-  /// Mendapatkan daftar mahasiswa
-  Future<List<MahasiswaModel>> getMahasiswaList() async {
-    // Simulasi network delay
-    await Future.delayed(const Duration(seconds: 1));
+  final Dio _dio = Dio();
 
-    // Data dummy mahasiswa
-    return [
-      MahasiswaModel(
-        nama: 'Budi Santoso',
-        nim: '2021001',
-        email: 'budi.santoso@example.com',
-        jurusan: 'Teknik Informatika',
-        semester: '6',
-      ),
-      MahasiswaModel(
-        nama: 'Siti Aminah',
-        nim: '2021002',
-        email: 'siti.aminah@example.com',
-        jurusan: 'Teknik Informatika',
-        semester: '6',
-      ),
-      MahasiswaModel(
-        nama: 'Rizky Pratama',
-        nim: '2021003',
-        email: 'rizky.pratama@example.com',
-        jurusan: 'Teknik Informatika',
-        semester: '4',
-      ),
-      MahasiswaModel(
-        nama: 'Dewi Lestari',
-        nim: '2022001',
-        email: 'dewi.lestari@example.com',
-        jurusan: 'Teknik Informatika',
-        semester: '4',
-      ),
-      MahasiswaModel(
-        nama: 'Ahmad Fauzi',
-        nim: '2022002',
-        email: 'ahmad.fauzi@example.com',
-        jurusan: 'Teknik Informatika',
-        semester: '2',
-      ),
-    ];
+  /// Mendapatkan daftar mahasiswa menggunakan HTTP (Opsional)
+  Future<List<MahasiswaModel>> getMahasiswaListHttp() async {
+    final response = await http.get(
+      Uri.parse('https://jsonplaceholder.typicode.com/comments'),
+      headers: {'Accept': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+      return data.map((json) => MahasiswaModel.fromJson(json)).toList();
+    } else {
+      throw Exception('Gagal memuat data mahasiswa: ${response.statusCode}');
+    }
+  }
+
+  /// Mendapatkan daftar mahasiswa menggunakan Dio (Main Method yang dipakai Riverpod)
+  Future<List<MahasiswaModel>> getMahasiswaList() async {
+    try {
+      final response = await _dio.get(
+        'https://jsonplaceholder.typicode.com/comments',
+        options: Options(headers: {'Accept': 'application/json'}),
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = response.data;
+        return data.map((json) => MahasiswaModel.fromJson(json)).toList();
+      } else {
+        throw Exception('Gagal memuat data mahasiswa: ${response.statusCode}');
+      }
+    } on DioException catch (e) {
+      throw Exception('Gagal memuat data mahasiswa: ${e.message}');
+    }
   }
 }
