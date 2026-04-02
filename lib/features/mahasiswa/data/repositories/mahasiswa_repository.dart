@@ -1,42 +1,23 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:dio/dio.dart';
+import 'package:mobel1/core/network/dio_client.dart';
 import 'package:mobel1/features/mahasiswa/data/models/mahasiswa_model.dart';
+import 'package:dio/dio.dart';
 
 class MahasiswaRepository {
-  final Dio _dio = Dio();
+  final DioClient _dioClient;
 
-  /// Mendapatkan daftar mahasiswa menggunakan HTTP (Opsional)
-  Future<List<MahasiswaModel>> getMahasiswaListHttp() async {
-    final response = await http.get(
-      Uri.parse('https://jsonplaceholder.typicode.com/comments'),
-      headers: {'Accept': 'application/json'},
-    );
+  MahasiswaRepository({DioClient? dioClient})
+      : _dioClient = dioClient ?? DioClient();
 
-    if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body);
-      return data.map((json) => MahasiswaModel.fromJson(json)).toList();
-    } else {
-      throw Exception('Gagal memuat data mahasiswa: ${response.statusCode}');
-    }
-  }
-
-  /// Mendapatkan daftar mahasiswa menggunakan Dio (Main Method yang dipakai Riverpod)
+  /// get data daftar mahasiswa
   Future<List<MahasiswaModel>> getMahasiswaList() async {
     try {
-      final response = await _dio.get(
-        'https://jsonplaceholder.typicode.com/comments',
-        options: Options(headers: {'Accept': 'application/json'}),
-      );
-
-      if (response.statusCode == 200) {
-        final List<dynamic> data = response.data;
-        return data.map((json) => MahasiswaModel.fromJson(json)).toList();
-      } else {
-        throw Exception('Gagal memuat data mahasiswa: ${response.statusCode}');
-      }
+      final Response response = await _dioClient.dio.get('/users');
+      final List<dynamic> data = response.data;
+      return data.map((json) => MahasiswaModel.fromJson(json)).toList();
     } on DioException catch (e) {
-      throw Exception('Gagal memuat data mahasiswa: ${e.message}');
+      throw Exception(
+        'Gagal memuat data mahasiswa: ${e.response?.statusCode} - ${e.message}',
+      );
     }
   }
 }

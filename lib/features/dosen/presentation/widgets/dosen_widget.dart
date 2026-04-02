@@ -179,7 +179,7 @@ class _ModernDosenCardState extends State<ModernDosenCard>
     );
   }
 
-  Widget  (IconData icon, String text) {
+  Widget _buildInfoRow(IconData icon, String text) {
     return Row(
       children: [
         Icon(icon, size: 14, color: Colors.grey[600]),
